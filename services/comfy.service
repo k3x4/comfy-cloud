@@ -1,0 +1,14 @@
+[Unit]
+Description=ComfyUI server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=user
+WorkingDirectory=%h/ComfyUI
+ExecStart=%h/ComfyUI/venv/bin/python %h/ComfyUI/main.py
+Restart=on-failure
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
