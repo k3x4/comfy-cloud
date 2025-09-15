@@ -5,8 +5,8 @@ Wants=network-online.target
 
 [Service]
 User=user
-WorkingDirectory=%h/ComfyUI
-ExecStart=%h/ComfyUI/venv/bin/python %h/ComfyUI/main.py
+WorkingDirectory=%h/comfy
+ExecStart=%h/comfy/venv/bin/python %h/comfy/main.py
 Restart=on-failure
 Environment=PYTHONUNBUFFERED=1
 
