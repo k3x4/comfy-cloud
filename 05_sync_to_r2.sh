@@ -26,15 +26,15 @@ CONF
 
 rclone --config "$TMPCONF" mkdir "r2:${R2_BUCKET}" >/dev/null 2>&1 || true
 
-TS="$(date -u +%Y%m%d-%H%M%S)"
 DATA_DIRS=(user output input models custom_nodes)
 
+echo "==> Mirror ${COMFY_DIR} -> r2:${R2_BUCKET}/${R2_PREFIX} (χωρίς trash)"
 for d in "${DATA_DIRS[@]}"; do
   SRC="${COMFY_DIR}/${d}"
   if [ -d "$SRC" ]; then
+    echo "--> ${d}"
     rclone --config "$TMPCONF" sync \
       "$SRC" "r2:${R2_BUCKET}/${R2_PREFIX}/${d}" \
-      --backup-dir "r2:${R2_BUCKET}/${R2_PREFIX}/.trash/${TS}/${d}" \
       --fast-list --size-only \
       --exclude ".git/**" --exclude "__pycache__/**" \
       --transfers 8 --checkers 8 --progress
@@ -46,5 +46,4 @@ done
     "r2:${R2_BUCKET}/${R2_PREFIX}/" -P
 
 rm -f "$TMPCONF"
-echo "✅ Sync ολοκληρώθηκε."
-echo "ℹ️ Διαγραφές/αντικαταστάσεις πήγαν στο: r2:${R2_BUCKET}/${R2_PREFIX}/.trash/${TS}"
+echo "✅ Sync OK"
