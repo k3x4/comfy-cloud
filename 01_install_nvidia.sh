@@ -7,4 +7,4 @@ sudo apt install -y ubuntu-drivers-common build-essential dkms linux-headers-$(u
 
 sudo ubuntu-drivers autoinstall || true
 
-echo "✅ Sync OK | REBOOT NEEDED"
+echo "✅ Nvidia driver OK | REBOOT NEEDED"
