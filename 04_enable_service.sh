@@ -28,8 +28,8 @@ sudo systemctl --no-pager status comfy || true
 
 # sudo systemctl daemon-reexec
 # sudo systemctl daemon-reload
-# sudo systemctl enable comfyui
-# sudo systemctl start comfyui
-# sudo systemctl status comfyui
+# sudo systemctl enable comfy
+# sudo systemctl start comfy
+# sudo systemctl status comfy
 
-# journalctl -u comfyui -f 
+# journalctl -u comfy -f
