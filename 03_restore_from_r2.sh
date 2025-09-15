@@ -55,24 +55,31 @@ if [ -x "$VENV_PY" ]; then
 
   PIP_NO_INPUT=1 "$VENV_PY" -m pip install -U pip wheel setuptools
 
-  shopt -s nullglob
+  echo "== Scanning requirements in: $COMFY_DIR/custom_nodes" | tee -a "$COMFY_DIR/user/install_requirements.log"
 
-  for NODE_DIR in "$COMFY_DIR/custom_nodes"/*/ ; do
-    echo ">> Node: $(basename "$NODE_DIR")"
-    while IFS= read -r REQ; do
-      echo "   - Installing from: $REQ"
+  mapfile -t REQS < <(find "$COMFY_DIR/custom_nodes" -maxdepth 2 -type f -iname 'requirements*.txt' | sort)
+
+  if [ "${#REQS[@]}" -eq 0 ]; then
+    echo "[INFO] No requirements*.txt found under custom_nodes (maxdepth=2)." | tee -a "$COMFY_DIR/user/install_requirements.log"
+  else
+    for REQ in "${REQS[@]}"; do
+      echo "-> Installing from: $REQ" | tee -a "$COMFY_DIR/user/install_requirements.log"
       if [ -s "$CONSTRAINTS" ]; then
-        PIP_NO_INPUT=1 "$VENV_PY" -m pip install -r "$REQ" -c "$CONSTRAINTS"
+        PIP_NO_INPUT=1 "$VENV_PY" -m pip install -r "$REQ" -c "$CONSTRAINTS" 2>&1 | tee -a "$COMFY_DIR/user/install_requirements.log"
       else
-        PIP_NO_INPUT=1 "$VENV_PY" -m pip install -r "$REQ"
+        PIP_NO_INPUT=1 "$VENV_PY" -m pip install -r "$REQ" 2>&1 | tee -a "$COMFY_DIR/user/install_requirements.log"
       fi
-    done < <(find "$NODE_DIR" -maxdepth 2 -type f -iname 'requirements*.txt' | sort)
+    done
+  fi
 
-    if [ -f "$NODE_DIR/pyproject.toml" ] && [ ! -s <(find "$NODE_DIR" -maxdepth 2 -type f -iname 'requirements*.txt') ]; then
-      echo "   - Found pyproject.toml (no requirements*.txt). Trying editable install..."
-      PIP_NO_INPUT=1 "$VENV_PY" -m pip install -e "$NODE_DIR" || echo "   ! pyproject install failed (ignored)"
+  while IFS= read -r -d '' PYP; do
+    NODE_DIR="$(dirname "$PYP")"
+    if ! find "$NODE_DIR" -maxdepth 1 -type f -iname 'requirements*.txt' | grep -q . ; then
+      echo "-> Editable install (pyproject.toml): $NODE_DIR" | tee -a "$COMFY_DIR/user/install_requirements.log"
+      PIP_NO_INPUT=1 "$VENV_PY" -m pip install -e "$NODE_DIR" 2>&1 | tee -a "$COMFY_DIR/user/install_requirements.log" || \
+        echo "[WARN] pyproject install failed for $NODE_DIR (ignored)" | tee -a "$COMFY_DIR/user/install_requirements.log"
     fi
-  done
+  done < <(find "$COMFY_DIR/custom_nodes" -maxdepth 2 -type f -name 'pyproject.toml' -print0)
 
   rm -f "$CONSTRAINTS"
 else
