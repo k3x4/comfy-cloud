@@ -19,7 +19,7 @@ sudo systemctl daemon-reload
 sleep 1
 sudo systemctl enable comfy
 sleep 1
-sudo systemctl start comfyui
+sudo systemctl start comfy
 sleep 1
 sudo systemctl --no-pager status comfy || true
 
