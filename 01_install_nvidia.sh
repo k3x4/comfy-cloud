@@ -6,3 +6,5 @@ sudo apt install -y ubuntu-drivers-common build-essential dkms linux-headers-$(u
                     git curl python3-venv python3-dev
 
 sudo ubuntu-drivers autoinstall || true
+
+echo "✅ Sync OK | REBOOT NEEDED"
