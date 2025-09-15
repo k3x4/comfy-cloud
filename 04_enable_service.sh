@@ -13,5 +13,20 @@ else
   sudo sed -i "/^\[Service\]/a User=${USERNAME}" "$DEST"
 fi
 
+sudo systemctl daemon-reexec
+sleep 1
 sudo systemctl daemon-reload
-sudo systemctl enable --now comfy.service
+sleep 1
+sudo systemctl enable comfy
+sleep 1
+sudo systemctl start comfyui
+sleep 1
+sudo systemctl --no-pager status comfy.service || true
+
+# sudo systemctl daemon-reexec
+# sudo systemctl daemon-reload
+# sudo systemctl enable comfyui
+# sudo systemctl start comfyui
+# sudo systemctl status comfyui
+
+# journalctl -u comfyui -f 
