@@ -47,25 +47,33 @@ rm -f "$TMPCONF"
 VENV_PY="$COMFY_DIR/venv/bin/python"
 
 if [ -x "$VENV_PY" ]; then
-
   CONSTRAINTS="$(mktemp)"
   for PKG in torch torchvision torchaudio xformers onnxruntime onnxruntime-gpu; do
     VER="$($VENV_PY -m pip show "$PKG" 2>/dev/null | awk -F': ' '/^Version/{print $2}')"
     [ -n "$VER" ] && echo "${PKG}==${VER}" >> "$CONSTRAINTS"
   done
 
-  PIP_NO_INPUT=1 "$VENV_PY" -m pip install -U pip wheel setuptools >/dev/null
+  PIP_NO_INPUT=1 "$VENV_PY" -m pip install -U pip wheel setuptools
 
   shopt -s nullglob
+
   for NODE_DIR in "$COMFY_DIR/custom_nodes"/*/ ; do
-    for REQ in "$NODE_DIR"requirements*.txt ; do
+    echo ">> Node: $(basename "$NODE_DIR")"
+    while IFS= read -r REQ; do
+      echo "   - Installing from: $REQ"
       if [ -s "$CONSTRAINTS" ]; then
         PIP_NO_INPUT=1 "$VENV_PY" -m pip install -r "$REQ" -c "$CONSTRAINTS"
       else
         PIP_NO_INPUT=1 "$VENV_PY" -m pip install -r "$REQ"
       fi
-    done
+    done < <(find "$NODE_DIR" -maxdepth 2 -type f -iname 'requirements*.txt' | sort)
+
+    if [ -f "$NODE_DIR/pyproject.toml" ] && [ ! -s <(find "$NODE_DIR" -maxdepth 2 -type f -iname 'requirements*.txt') ]; then
+      echo "   - Found pyproject.toml (no requirements*.txt). Trying editable install..."
+      PIP_NO_INPUT=1 "$VENV_PY" -m pip install -e "$NODE_DIR" || echo "   ! pyproject install failed (ignored)"
+    fi
   done
+
   rm -f "$CONSTRAINTS"
 else
   echo "[WARN] Δεν βρέθηκε venv στο $COMFY_DIR/venv — παράλειψη εγκατάστασης requirements custom nodes."
