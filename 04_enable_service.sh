@@ -21,7 +21,7 @@ sudo systemctl enable comfy
 sleep 1
 sudo systemctl start comfyui
 sleep 1
-sudo systemctl --no-pager status comfy.service || true
+sudo systemctl --no-pager status comfy || true
 
 # sudo systemctl daemon-reexec
 # sudo systemctl daemon-reload
