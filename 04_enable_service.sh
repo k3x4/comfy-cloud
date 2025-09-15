@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 USERNAME="${1:-user}"
 SRC="./services/comfy.service"
 DEST="/etc/systemd/system/comfy.service"
+HOME_DIR="$(eval echo "~${USERNAME}")"
 
 sudo cp "$SRC" "$DEST"
 
@@ -12,6 +13,8 @@ if sudo grep -qE '^[[:space:]]*User=' "$DEST"; then
 else
   sudo sed -i "/^\[Service\]/a User=${USERNAME}" "$DEST"
 fi
+
+sudo sed -i "s#%h#${HOME_DIR}#g" "$DEST"
 
 sudo systemctl daemon-reexec
 sleep 1
