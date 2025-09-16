@@ -26,7 +26,7 @@ CONF
 
 rclone --config "$TMPCONF" mkdir "r2:${R2_BUCKET}" >/dev/null 2>&1 || true
 
-DATA_DIRS=(user output input models custom_nodes)
+DATA_DIRS=(user output input models)
 
 echo "==> Mirror ${COMFY_DIR} -> r2:${R2_BUCKET}/${R2_PREFIX}"
 for d in "${DATA_DIRS[@]}"; do
