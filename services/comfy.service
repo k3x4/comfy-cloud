@@ -6,9 +6,9 @@ Wants=network-online.target
 [Service]
 User=user
 WorkingDirectory=%h/comfy
-ExecStart=%h/comfy/venv/bin/python %h/comfy/main.py
+Environment=PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128,garbage_collection_threshold:0.9,expandable_segments:True
+ExecStart=%h/comfy/venv/bin/python %h/comfy/main.py --cuda-malloc --use-pytorch-cross-attention
 Restart=on-failure
-Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target
