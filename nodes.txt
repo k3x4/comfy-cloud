@@ -1,0 +1,7 @@
+https://github.com/shiimizu/ComfyUI-TiledDiffusion
+https://github.com/BlenderNeko/ComfyUI_TiledKSampler
+https://github.com/huchenlei/ComfyUI-layerdiffuse
+https://github.com/kijai/ComfyUI-SUPIR
+https://github.com/ssitu/ComfyUI_UltimateSDUpscale
+https://github.com/rgthree/rgthree-comfy
+https://github.com/wallish77/wlsh_nodes
