@@ -9,11 +9,11 @@ source "$COMFY_DIR/venv/bin/activate"
 mkdir -p "$CUSTOM_NODES_DIR"
 
 while IFS= read -r REPO; do
-  NAME="$(basename "$REPO" .git)"
-  git clone --depth 1 "$REPO" "$CUSTOM_NODES_DIR/$NAME"
+    NAME="$(basename "$REPO" .git)"
+    git clone --depth 1 "$REPO" "$CUSTOM_NODES_DIR/$NAME"
 
-  python -m pip install -r "$CUSTOM_NODES_DIR/$NAME/requirements.txt" 2>/dev/null || true
-  for REQ in "$CUSTOM_NODES_DIR/$NAME"/requirements*.txt; do
-    python -m pip install -r "$REQ" 2>/dev/null || true
-  done
+    python -m pip install -r "$CUSTOM_NODES_DIR/$NAME/requirements.txt" || exit 1
+    for REQ in "$CUSTOM_NODES_DIR/$NAME"/requirements*.txt; do
+    [ -f "$REQ" ] && python -m pip install -r "$REQ" || exit 1
+    done
 done < "$LIST_FILE"
