@@ -7,3 +7,5 @@ https://github.com/rgthree/rgthree-comfy
 https://github.com/wallish77/wlsh_nodes
 https://github.com/PanicTitan/ComfyUI-Gallery
 https://github.com/spinagon/ComfyUI-seamless-tiling
+https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
+https://github.com/Fannovel16/comfyui_controlnet_aux
