@@ -25,6 +25,7 @@ sleep 1
 sudo systemctl start comfy
 sleep 1
 sudo systemctl --no-pager status comfy || true
+journalctl -u comfy -f
 
 # sudo systemctl daemon-reexec
 # sudo systemctl daemon-reload
