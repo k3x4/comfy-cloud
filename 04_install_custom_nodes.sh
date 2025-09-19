@@ -8,7 +8,7 @@ VENV_DIR="${VENV_DIR:-$HOME/comfy/venv}"
 PORT="${PORT:-8188}"
 HOST="${HOST:-127.0.0.1}"
 BASE_URL="http://$HOST:$PORT"
-NODES_LIST="${NODES_LIST:-./nodes.txt}"   # ένα URL ανά γραμμή (βλ. παράδειγμα πιο κάτω)
+NODES_LIST="${NODES_LIST:-nodes.txt}"   # ένα URL ανά γραμμή (βλ. παράδειγμα πιο κάτω)
 
 ### ——— Βοηθητικά ———
 die(){ echo "❌ $*" >&2; exit 1; }
@@ -36,11 +36,11 @@ cleanup() {
 trap cleanup EXIT
 
 ### ——— 3) Περίμενε να γίνει διαθέσιμο το HTTP ———
-echo "⏳ Περιμένω να σηκωθεί το ComfyUI…"
+echo "⏳ Περιμένω να σηκωθεί το ComfyUI..."
 for i in {1..120}; do
   code=$(curl_ok "$BASE_URL/")
   if [ "$code" = "200" ]; then
-    echo "✅ ComfyUI είναι επάνω."
+    echo "✅ Το ComfyUI είναι επάνω."
     break
   fi
   sleep 1
@@ -49,11 +49,16 @@ done
 
 ### ——— 4) Εγκατάσταση nodes μέσω Manager REST ———
 # Προαιρετικός έλεγχος ότι το endpoint υπάρχει (αν όχι, ίσως χρειάζεται 1ο restart)
-code=$(curl_ok "$BASE_URL/manager/list")
-if [ "$code" != "200" ]; then
-  echo "ℹ️  Το /manager δεν απαντά ακόμη. Ίσως ο Manager φορτώνει στο 1ο run. Περιμένω λίγο…"
-  sleep 3
-fi
+echo "⏳ Περιμένω να σηκωθεί ο Manager..."
+for i in {1..120}; do
+    code=$(curl_ok "$BASE_URL/manager/list")
+    if [ "$code" = "200" ]; then
+        echo "✅ Ο Manager είναι επάνω."
+        break
+    fi
+    sleep 1
+    [ $i -eq 120 ] && die "Ο Manager δεν απάντησε εγκαίρως."
+done
 
 echo "🔧 Εγκατάσταση custom nodes από: $NODES_LIST"
 while IFS= read -r URL; do
