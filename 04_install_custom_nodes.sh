@@ -6,32 +6,21 @@ VENV_DIR="${VENV_DIR:-$HOME/comfy/venv}"
 CM_DIR="${CM_DIR:-$HOME/comfy/custom_nodes/ComfyUI-Manager}"
 NODES_LIST="${NODES_LIST:-nodes.txt}"
 
-CHANNEL="${CHANNEL:-default}"
-MODE="${MODE:-remote}"
-
-[ -d "$COMFY_DIR" ] || { echo "❌ COMFY_DIR not found: $COMFY_DIR"; exit 1; }
-[ -d "$VENV_DIR" ]  || { echo "❌ VENV_DIR not found:  $VENV_DIR"; exit 1; }
-[ -f "$NODES_LIST" ]|| { echo "❌ nodes.txt missing:   $NODES_LIST"; exit 1; }
-
-# venv
 source "$VENV_DIR/bin/activate"
-
-CM="$CM_DIR/cm-cli.py"
 export COMFYUI_PATH="$COMFY_DIR"
 
-echo "🔧 Εγκατάσταση από $NODES_LIST (channel=$CHANNEL, mode=$MODE)"
-while IFS= read -r LINE; do
-  ENTRY="${LINE#"${LINE%%[![:space:]]*}"}"
-  [[ -z "$ENTRY" || "$ENTRY" =~ ^# ]] && continue
+CM="$CM_DIR/cm-cli.py"
 
-    echo "➡️  install: $ENTRY"
-    python "$CM" install "$ENTRY" --channel "$CHANNEL" --mode "$MODE"
-done < "$NODES_LIST"
+# 1) PRIME CACHE (1 φορά)
+python "$CM" simple-show all --channel default --mode remote >/dev/null 2>&1 || true
 
-echo "🧰 fix deps"
-python "$CM" fix all --channel "$CHANNEL" --mode "$MODE" || true
+# 2) Μάζεψε τα ονόματα σε array (αγνόησε κενά/#)
+mapfile -t NODES < <(grep -vE '^\s*#' "$NODES_LIST" | sed -E 's/^\s+|\s+$//g' | awk 'NF')
 
-echo "📦 restore-dependencies"
-python "$CM" restore-dependencies || true
+# 3) Εγκατάσταση σε ΜΙΑ κλήση, από cache (ελάχιστο fetch)
+python "$CM" install "${NODES[@]}" --channel default --mode cache 2> >(grep -v 'install_node exit on fail' >&2)
 
-echo "✅ Τέλος."
+# 4) Προαιρετικά: fix deps
+python "$CM" fix all --channel default --mode cache 2> >(grep -v 'install_node exit on fail' >&2)
+
+echo "✅ Done"
