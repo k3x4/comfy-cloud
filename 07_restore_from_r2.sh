@@ -26,9 +26,9 @@ CONF
 
 [ -d "$COMFY_DIR/.git" ] || { echo "run 02_install_comfy.sh first"; exit 1; }
 
-mkdir -p "$COMFY_DIR"/{user,output,input,models}
+mkdir -p "$COMFY_DIR"/{user,output,input}
 
-for d in user output input models; do
+for d in user output input; do
   REM="r2:${R2_BUCKET}/${R2_PREFIX}/${d}"
   LOC="${COMFY_DIR}/${d}"
   echo "--> ${d}"
