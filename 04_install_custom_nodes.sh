@@ -24,13 +24,8 @@ while IFS= read -r LINE; do
   ENTRY="${LINE#"${LINE%%[![:space:]]*}"}"
   [[ -z "$ENTRY" || "$ENTRY" =~ ^# ]] && continue
 
-  if [[ "$ENTRY" =~ github.com ]]; then
-    echo "➡️  install-url: $ENTRY"
-    python "$CM" install-url "$ENTRY" --channel "$CHANNEL" --mode "$MODE"
-  else
     echo "➡️  install: $ENTRY"
     python "$CM" install "$ENTRY" --channel "$CHANNEL" --mode "$MODE"
-  fi
 done < "$NODES_LIST"
 
 echo "🧰 fix deps"
