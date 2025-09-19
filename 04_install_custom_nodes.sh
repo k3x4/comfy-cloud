@@ -12,7 +12,7 @@ export COMFYUI_PATH="$COMFY_DIR"
 CM="$CM_DIR/cm-cli.py"
 
 # 1) PRIME CACHE (1 φορά)
-python "$CM" simple-show all --channel default --mode remote >/dev/null 2>&1 || true
+python "$CM" simple-show all --channel default --mode remote || true
 
 # 2) Μάζεψε τα ονόματα σε array (αγνόησε κενά/#)
 mapfile -t NODES < <(grep -vE '^\s*#' "$NODES_LIST" | sed -E 's/^\s+|\s+$//g' | awk 'NF')
