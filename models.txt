@@ -1,6 +1,6 @@
 https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors checkpoints
 https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0_0.9vae.safetensors checkpoints
-https://civitai.com/api/download/models/1759168?type=Model&format=SafeTensor&size=full&fp=fp16 checkpoints
+https://civitai.com/api/download/models/1759168 checkpoints juggernautXL_ragnarokBy.safetensors
 
 https://huggingface.co/FacehugmanIII/4x_foolhardy_Remacri/resolve/main/4x_foolhardy_Remacri.pth upscale_models Remacri.pth
 https://huggingface.co/lokCX/4x-Ultrasharp/resolve/main/4x-UltraSharp.pth upscale_models UltraSharp.pth
