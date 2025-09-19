@@ -1,2 +1,13 @@
 https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors checkpoints
 https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0_0.9vae.safetensors checkpoints
+https://civitai.com/api/download/models/1759168?type=Model&format=SafeTensor&size=full&fp=fp16 checkpoints
+
+https://huggingface.co/FacehugmanIII/4x_foolhardy_Remacri/resolve/main/4x_foolhardy_Remacri.pth upscale_models Remacri.pth
+https://huggingface.co/lokCX/4x-Ultrasharp/resolve/main/4x-UltraSharp.pth upscale_models UltraSharp.pth
+https://huggingface.co/Kim2091/UltraSharpV2/resolve/main/4x-UltraSharpV2.pth upscale_models UltraSharpV2.pth
+https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth upscale_models NMKD-Siax_200k.pth
+https://huggingface.co/tobstudios/4xNomos8kDAT/resolve/main/4xNomos8kDAT.pth upscale_models Nomos8kDAT.pth
+
+https://huggingface.co/lllyasviel/control_v11f1e_sd15_tile/resolve/main/diffusion_pytorch_model.bin controlnet/sd15 control_v11f1e_sd15_tile.bin
+https://huggingface.co/xinsir/controlnet-tile-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors controlnet/SDXL controlnet-tile-sdxl-1.0.safetensors
+https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic/resolve/main/TTPLANET_Controlnet_Tile_realistic_v2_fp16.safetensors controlnet/SDXL
