@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e
 
 COMFY_DIR="${COMFY_DIR:-$HOME/comfy}"

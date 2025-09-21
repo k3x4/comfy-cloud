@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
 read -s -p "Passphrase: " PASS; echo; set -a; . <(echo "$PASS" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -d .env.gpg); set +a
