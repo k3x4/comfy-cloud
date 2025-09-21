@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 bash ./02_install_zram.sh
 bash ./03_install_comfy.sh

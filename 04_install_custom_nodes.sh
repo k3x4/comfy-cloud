@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 COMFY_DIR="${COMFY_DIR:-$HOME/comfy}"
