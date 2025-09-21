@@ -11,3 +11,5 @@ https://huggingface.co/tobstudios/4xNomos8kDAT/resolve/main/4xNomos8kDAT.pth ups
 https://huggingface.co/lllyasviel/control_v11f1e_sd15_tile/resolve/main/diffusion_pytorch_model.bin controlnet/sd15 control_v11f1e_sd15_tile.bin
 https://huggingface.co/xinsir/controlnet-tile-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors controlnet/SDXL controlnet-tile-sdxl-1.0.safetensors
 https://huggingface.co/TTPlanet/TTPLanet_SDXL_Controlnet_Tile_Realistic/resolve/main/TTPLANET_Controlnet_Tile_realistic_v2_fp16.safetensors controlnet/SDXL
+
+https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors controlnet
