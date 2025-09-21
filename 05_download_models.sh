@@ -58,3 +58,4 @@ while read -r url subfolder filename; do
       || { echo "❌ Αποτυχία: $url"; continue; }
   fi
 done < "$INPUT_FILE"
+

@@ -24,3 +24,4 @@ python "$CM" install "${NODES[@]}" --channel default --mode cache 2> >(grep -v '
 python "$CM" fix all --channel default --mode cache 2> >(grep -v 'install_node exit on fail' >&2)
 
 echo "✅ Done"
+

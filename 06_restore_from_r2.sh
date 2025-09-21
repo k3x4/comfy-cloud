@@ -43,3 +43,4 @@ rclone --config "$TMPCONF" copy "r2:${R2_BUCKET}/${R2_PREFIX}/extra_model_paths.
   "$COMFY_DIR/" -P || true
 
 rm -f "$TMPCONF"
+
