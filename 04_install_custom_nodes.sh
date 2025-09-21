@@ -81,8 +81,8 @@ done
 
 # === ΤΕΛΙΚΟ ΒΗΜΑ (ΠΡΟΑΙΡΕΤΙΚΟ αλλά χρήσιμο) ===
 if [ -f "$CM_CLI" ]; then
-  echo -e "\n👉 Τελικό Manager fix (offline, ΧΩΡΙΣ registry):"
+  echo -e "\n👉 Τελικό Manager fix:"
   python "$CM_CLI" fix all --mode local
 fi
 
-echo -e "\n🎉 Όλα ΟΚ. Χωρίς FETCH ComfyRegistry."
+echo -e "\n🎉 Όλα ΟΚ."
