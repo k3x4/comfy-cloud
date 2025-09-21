@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-gpg --symmetric --cipher-algo AES256 -o .env.gpg .env
-
+gpg -o .env -d .env.gpg
