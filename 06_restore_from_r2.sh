@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# cd "$(dirname "$0")"
-# [ -f ".env" ] && set -a && . ./.env && set +a
+# read -s -p "Passphrase: " PASS; echo; set -a; . <(echo "$PASS" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -d .env.gpg); set +a
 
-read -s -p "Passphrase: " PASS; echo; set -a; . <(echo "$PASS" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -d .env.gpg); set +a
+cd "$(dirname "$0")"
+[ -f ".env" ] && set -a && . ./.env && set +a
 
 : "${R2_ACCOUNT_ID:?R2_ACCOUNT_ID missing}"
 : "${R2_ACCESS_KEY_ID:?R2_ACCESS_KEY_ID missing}"
