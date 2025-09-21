@@ -7,7 +7,7 @@ VENV_DIR="${VENV_DIR:-$COMFY_DIR/venv}"
 CUSTOM_DIR="$COMFY_DIR/custom_nodes"
 NODES_FILE="${NODES_FILE:-nodes.txt}"
 
-# Αν υπάρχει Manager θα κάνουμε ένα "fix all" στο τέλος (offline)
+# Αν υπάρχει Manager, στο τέλος θα τρέξουμε "fix all" offline (δεν τραβάει registry)
 CM_CLI="$CUSTOM_DIR/ComfyUI-Manager/cm-cli.py"
 
 # === ΕΛΕΓΧΟΙ ===
@@ -21,7 +21,7 @@ export COMFYUI_PATH="$COMFY_DIR"
 
 # === HELPERS ===
 repo_name() {
-  # κρατά ακριβώς το όνομα του repo όπως στο GitHub (χωρίς .git)
+  # basename του repo, χωρίς .git
   local url="$1"
   local name="${url##*/}"
   printf "%s" "${name%.git}"
@@ -39,30 +39,21 @@ clone_or_update() {
     echo "==> git clone: $url → $dest" >&2
     git clone --depth 1 "$url" "$dest" >&2
   fi
-  # stdout ΜΟΝΟ το τελικό path
+  # stdout: ΜΟΝΟ το path
   printf "%s" "$dest"
 }
 
 install_deps() {
   local dir="$1"
-
-  # 1) requirements*.txt
+  # ΜΟΝΟ requirements*.txt — δεν επιχειρούμε pip install του φακέλου
   local req
   req="$(find "$dir" -maxdepth 2 -type f -iname 'requirements*.txt' | head -n1 || true)"
   if [ -n "${req:-}" ]; then
     echo "   ↳ pip install -r $(basename "$req")"
     python -m pip install -r "$req"
-    return
+  else
+    echo "   ↳ (δεν βρέθηκε requirements*.txt — skip pip)"
   fi
-
-  # 2) pyproject.toml / setup.py
-  if [ -f "$dir/pyproject.toml" ] || [ -f "$dir/setup.py" ]; then
-    echo "   ↳ pip install (local package) στο $dir"
-    python -m pip install "$dir"
-    return
-  fi
-
-  echo "   ↳ (κανένα requirements/pyproject/setup δεν βρέθηκε)"
 }
 
 # === MAIN ===
@@ -74,7 +65,7 @@ fi
 
 for url in "${REPOS[@]}"; do
   echo -e "\n==== $url ===="
-  node_dir="$(clone_or_update "$url")"   # stdout = ΜΟΝΟ path
+  node_dir="$(clone_or_update "$url")"   # stdout = path
   install_deps "$node_dir"
   echo "✅ Done: $url"
 done
