@@ -21,7 +21,7 @@ mapfile -t NODES < <(grep -vE '^\s*#' "$NODES_LIST" | sed -E 's/^\s+|\s+$//g' | 
 python "$CM" install "${NODES[@]}" --channel default --mode cache 2> >(grep -v 'install_node exit on fail' >&2)
 
 # 4) Προαιρετικά: fix deps
-python "$CM" fix all --channel default --mode cache 2> >(grep -v 'install_node exit on fail' >&2)
+# python "$CM" fix all --channel default --mode cache 2> >(grep -v 'install_node exit on fail' >&2)
 
 echo "✅ Done"
 
