@@ -1,86 +1,88 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# === ΡΥΘΜΙΣΕΙΣ ===
 COMFY_DIR="${COMFY_DIR:-$HOME/comfy}"
 VENV_DIR="${VENV_DIR:-$COMFY_DIR/venv}"
-CM="${CM:-$COMFY_DIR/custom_nodes/ComfyUI-Manager/cm-cli.py}"
+CUSTOM_DIR="$COMFY_DIR/custom_nodes"
 NODES_FILE="${NODES_FILE:-nodes.txt}"
 
-[ -f "$NODES_FILE" ] || { echo "❌ Δεν βρέθηκε $NODES_FILE"; exit 1; }
-[ -f "$CM" ] || { echo "❌ Δεν βρέθηκε το cm-cli: $CM"; exit 1; }
-[ -d "$VENV_DIR" ] || { echo "❌ Δεν βρέθηκε το venv: $VENV_DIR"; exit 1; }
+# Αν υπάρχει Manager θα κάνουμε ένα "fix all" στο τέλος (offline)
+CM_CLI="$CUSTOM_DIR/ComfyUI-Manager/cm-cli.py"
 
+# === ΕΛΕΓΧΟΙ ===
+[ -f "$NODES_FILE" ] || { echo "❌ Δεν βρέθηκε $NODES_FILE"; exit 1; }
+[ -d "$CUSTOM_DIR" ] || { echo "❌ Δεν βρέθηκε $CUSTOM_DIR"; exit 1; }
+[ -d "$VENV_DIR" ]  || { echo "❌ Δεν βρέθηκε το venv: $VENV_DIR"; exit 1; }
+
+# Ενεργοποίηση venv & Comfy path
 source "$VENV_DIR/bin/activate"
 export COMFYUI_PATH="$COMFY_DIR"
 
-find_node_dir() {
+# === HELPERS ===
+sanitize_name() {
+  # Παίρνει repo URL και δίνει ασφαλές όνομα φακέλου
   local url="$1"
-  local base="$(basename "$url" .git)"
-
-  if [ -d "$COMFY_DIR/custom_nodes/$base" ]; then
-    echo "$COMFY_DIR/custom_nodes/$base"; return 0
-  fi
-
-  local m
-  m="$(find "$COMFY_DIR/custom_nodes" -maxdepth 1 -type d -iname "*${base}*" | head -n1 || true)"
-  if [ -n "${m:-}" ]; then echo "$m"; return 0; fi
-
-  m="$(find "$COMFY_DIR/custom_nodes" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' \
-      | sort -nr | awk 'NR==1{print $2}')"
-  echo "$m"
+  local name="${url##*/}"            # tail μετά το τελευταίο /
+  name="${name%.git}"                # βγάλε .git
+  # αντικατάσταση περίεργων χαρακτήρων
+  name="$(echo "$name" | tr '[:space:]' '_' | tr -cd '[:alnum:]_.-')"
+  printf "%s" "$name"
 }
 
-install_reqs() {
-  local node_dir="$1"
+clone_or_update() {
+  local url="$1"
+  local name; name="$(sanitize_name "$url")"
+  local dest="$CUSTOM_DIR/$name"
 
+  if [ -d "$dest/.git" ]; then
+    echo "==> git pull: $name"
+    git -C "$dest" pull --ff-only
+  else
+    echo "==> git clone: $url → $dest"
+    git clone --depth 1 "$url" "$dest"
+  fi
+  echo "$dest"
+}
+
+install_deps() {
+  local dir="$1"
+
+  # 1) requirements*.txt (πιο συνηθισμένο)
   local req
-  req="$(find "$node_dir" -maxdepth 2 -type f -iname 'requirements*.txt' | head -n1 || true)"
+  req="$(find "$dir" -maxdepth 2 -type f -iname 'requirements*.txt' | head -n1 || true)"
   if [ -n "${req:-}" ]; then
     echo "   ↳ pip install -r $(basename "$req")"
     python -m pip install -r "$req"
     return
   fi
 
-  if [ -f "$node_dir/pyproject.toml" ]; then
-    echo "   ↳ pip install (pyproject) στο $node_dir"
-    python -m pip install "$node_dir"
+  # 2) PEP 517 / setup
+  if [ -f "$dir/pyproject.toml" ] || [ -f "$dir/setup.py" ]; then
+    echo "   ↳ pip install (local package) στο $dir"
+    python -m pip install "$dir"
     return
   fi
 
-  if [ -f "$node_dir/setup.py" ]; then
-    echo "   ↳ pip install (setup.py) στο $node_dir"
-    python -m pip install "$node_dir"
-    return
-  fi
+  echo "   ↳ (κανένα requirements/pyproject/setup δεν βρέθηκε)"
 }
 
-install_one() {
-  local url="$1"
-  echo -e "\n==> Installing: $url"
-
-  python "$CM" install "$url" --channel default --mode local
-
-  python "$CM" fix all   --channel default --mode local
-
-  local node_dir; node_dir="$(find_node_dir "$url")"
-  if [ -d "$node_dir" ]; then
-    install_reqs "$node_dir"
-  else
-    echo "⚠️  Δεν εντοπίστηκε φάκελος για $url μέσα στα custom_nodes."
-  fi
-
-  echo "✅ Done: $url"
-}
-
+# === MAIN ===
 mapfile -t REPOS < <(grep -vE '^\s*#' "$NODES_FILE" | sed -E 's/^\s+|\s+$//g' | awk 'NF' | uniq)
-
 if [ "${#REPOS[@]}" -eq 0 ]; then
-  echo "⚠️  Το $NODES_FILE είναι άδειο."
-  exit 0
+  echo "⚠️  Το $NODES_FILE είναι άδειο."; exit 0
 fi
 
-for repo in "${REPOS[@]}"; do
-  install_one "$repo"
+for url in "${REPOS[@]}"; do
+  echo -e "\n==== $url ===="
+  node_dir="$(clone_or_update "$url")"
+  install_deps "$node_dir"
+  echo "✅ Done: $url"
 done
+
+if [ -f "$CM_CLI" ]; then
+  echo -e "\n👉 Τελικό Manager fix:"
+  python "$CM_CLI" fix all --mode local
+fi
 
 echo -e "\n🎉 Όλα ΟΚ."
